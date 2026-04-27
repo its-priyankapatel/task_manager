@@ -21,16 +21,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse createTask(CreateTaskRequest createTaskRequest) {
-        String status= createTaskRequest.getStatus().toUpperCase();
 
-       if(!status.equals("PENDING"))
-       {
-        throw new InvalidException("Status should be pending");
-       }
        Task newTask=new Task();
        newTask.setTitle(createTaskRequest.getTitle());
        newTask.setDescription(createTaskRequest.getDescription());
-       newTask.setStatus(status);
+       newTask.setStatus("PENDING");
 
        Task task = taskRepository.save(newTask);
 
