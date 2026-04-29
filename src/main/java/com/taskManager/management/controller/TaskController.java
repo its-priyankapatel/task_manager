@@ -1,7 +1,6 @@
 package com.taskManager.management.controller;
 
-import com.taskManager.management.dto.CreateTaskRequest;
-import com.taskManager.management.dto.TaskResponse;
+import com.taskManager.management.dto.*;
 import com.taskManager.management.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +36,19 @@ public class TaskController {
    {
        TaskResponse response= taskService.retrieveAllTasks();
        return ResponseEntity.status(HttpStatus.OK).body(List.of(response));
+   }
+
+   @PatchMapping("/update-status/{taskId}")
+    ResponseEntity<UpdateStatusResponse>changeStatus(@PathVariable Long taskId,@RequestBody UpdateStatusRequest updateStatusRequest)
+   {
+       UpdateStatusResponse response= taskService.updateStatus(taskId,updateStatusRequest);
+       return ResponseEntity.status(HttpStatus.OK).body(response);
+   }
+
+   @PutMapping("/update-task")
+    ResponseEntity<UpdateTaskResponse> updateTask(@RequestParam Long taskId, @RequestBody CreateTaskRequest update)
+   {
+       UpdateTaskResponse response = taskService.taskUpdate(taskId,update);
+       return ResponseEntity.status(HttpStatus.OK).body(response);
    }
 }
