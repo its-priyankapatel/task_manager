@@ -1,9 +1,7 @@
 package com.taskManager.management.service;
 
 import com.taskManager.management.Exception.InvalidException;
-import com.taskManager.management.dto.CreateTaskRequest;
-import com.taskManager.management.dto.TaskDto;
-import com.taskManager.management.dto.TaskResponse;
+import com.taskManager.management.dto.*;
 import com.taskManager.management.model.Task;
 import com.taskManager.management.repository.TaskRepository;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +49,41 @@ public class TaskServiceImpl implements TaskService {
     {
         List<Task> allTask = taskRepository.findAll();
         return new TaskResponse(true,"All tasks retrieve successfully",mapToDto(allTask));
+    }
+
+    @Override
+    public UpdateStatusResponse updateStatus(Long taskId,UpdateStatusRequest updateStatusRequest)
+    {
+       Optional<Task>isTaskExist =taskRepository.findById(taskId);
+       if(!isTaskExist.isPresent())
+       {
+           throw new InvalidException("Task is not exist");
+       }
+
+       String newStatus= updateStatusRequest.getStatus().toUpperCase();
+       if(!newStatus.equals("PENDING") && !newStatus.equals("IN_PROGRESS") && !newStatus.equals("COMPLETED"))
+       {
+           throw new InvalidException("Invalid Status value");
+       }
+       isTaskExist.get().setStatus(newStatus);
+       Task task = taskRepository.save(isTaskExist.get());
+       return new UpdateStatusResponse(true,"Status updated successfully",task);
+    }
+
+    @Override
+    public UpdateTaskResponse taskUpdate(Long taskId,CreateTaskRequest update)
+    {
+    Optional<Task> task= taskRepository.findById(taskId);
+    if(!task.isPresent())
+    {
+        throw new InvalidException("Task is not found");
+    }
+    Task newTask=task.get();
+    newTask.setTitle(update.getTitle());
+    newTask.setDescription(update.getDescription());
+    newTask.setStatus(update.getStatus());
+    Task updatedTask = taskRepository.save(newTask);
+    return new UpdateTaskResponse(true,"Task updated Successfully",updatedTask);
     }
 
     private List<TaskDto> mapToDto(List<Task> tasks)
